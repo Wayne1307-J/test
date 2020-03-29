@@ -1,0 +1,29 @@
+#include "semantics.h"
+char SrcFilePath[300];  // 用于存放输入文件路径
+// ……………
+extern FILE *yyin;  // LEX 需要的输入文件,缺省为 stdin
+
+int InitScanner (char* filename) //检查源程序文件是否合法
+{
+   yyin = fopen(filename, "r");  // 设置 LEXer的输入
+   if( yyin == NULL){
+	printf( "打开源程序文件 %s 出错!\n",  filename);
+	return 0;   
+   }
+   return 1; // OK
+}
+int  CloseScanner(){ fclose(yyin); return 0; }
+
+int main(int argc, char * argv[]) //不考虑绘图时
+{	
+    if( argc < 2 ){
+        printf("Usage: %s file\n", argv[0]);
+        return 1;
+    }
+    strcpy(SrcFilePath, argv[1]);	//保存源文件路径
+	// 检查要分析的源程序文件，并打开它
+    if ( 1 != InitScanner (SrcFilePath)) return 1; 
+    yyparse();	    // 调用语法分析器
+    CloseScanner();   // 关闭文件
+    return 0;
+}
